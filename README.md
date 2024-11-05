@@ -1,2 +1,2 @@
 # Order-by-Disorder
-a project for a course named Numerical Physics
+a group project for the course - Numerical Physics
