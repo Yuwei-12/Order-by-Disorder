@@ -16,17 +16,15 @@ class Configuration:
         for cell in range(L**2):
             for site in range(3):
                 
-                # Generate randomly the z-component of the spin vector, simultaneously considering the constraint: δS_z <= T
-                z_component = np.random.uniform(-T / 2, T / 2)
-                
-                # Calculating the magnitude of the two remaining components x and y
-                remaining_magnitude = np.sqrt(1 - z_component**2)
-                
-                # Generate the x-component and y-component randomly with the cos and sin functions
-                theta = np.random.uniform(0, 2 * np.pi)
-                x_component = remaining_magnitude * np.cos(theta)
-                y_component = remaining_magnitude * np.sin(theta)
-                
+                # Generate the spin of every lattice point randomly
+                x_component = np.random.uniform(-1, 1)
+                y_component = np.random.uniform(-1, 1)
+                z_component = np.random.uniform(-1, 1)
+                norm = math.sqrt(x_component**2 + y_component**2 + z_component**2)
+                x_component /= norm
+                y_component /= norm
+                z_component /= norm
+
                 # attribute values of the x,y,z-component to the spin_tensor for every triangular plaquette and every lattice point
                 spin_tensor[cell, site] = [x_component, y_component, z_component]
                 
