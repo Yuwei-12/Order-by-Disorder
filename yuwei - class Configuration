@@ -1,0 +1,52 @@
+import numpy as np
+import numpy.random as rnd
+import matplotlib.pyplot as plt
+
+class Configuration:
+    
+
+    def __init__(self, T, J, L):
+        self.size = L
+        self.J = J
+        self.beta = 1./T
+        # Generate the spin tensor (L^2 × 3 × 3)
+        spin_tensor = np.zeros((L**2, 3, 3))
+    
+        #  Every triangular plaquete has three lattice points, each spin of these points is a vector with three dimensions
+        for cell in range(L**2):
+            for site in range(3):
+                
+                # Generate randomly the z-component of the spin vector, simultaneously considering the constraint: δS_z <= T
+                z_component = np.random.uniform(-T / 2, T / 2)
+                
+                # Calculating the magnitude of the two remaining components x and y
+                remaining_magnitude = np.sqrt(1 - z_component**2)
+                
+                # Generate the x-component and y-component randomly with the cos and sin functions
+                theta = np.random.uniform(0, 2 * np.pi)
+                x_component = remaining_magnitude * np.cos(theta)
+                y_component = remaining_magnitude * np.sin(theta)
+                
+                # attribute values of the x,y,z-component to the spin_tensor for every triangular plaquette and every lattice point
+                spin_tensor[cell, site] = [x_component, y_component, z_component]
+                
+        # Save the generated spin tensor and calculate the hamiltonian        
+        
+        self.spins = spin_tensor
+        self.energy = self._get_energy()
+        
+        
+    def _get_energy(self):
+        """Returns the total energy"""
+        energy = 0.
+        for cell in range(self.size**2):
+            # Calculate the three components of the sum of the spins in every triangular plaquette
+            cell_spin = np.zeros(3)
+            cell_spin[0] = np.sum(self.spins[cell][:,0])
+            cell_spin[1] = np.sum(self.spins[cell][:,1])
+            cell_spin[2] = np.sum(self.spins[cell][:,2])        
+            # calculate the spin hamiltonian for this kagome lattice system 
+            energy += self.J/2 * (cell_spin[0]**2 + cell_spin[1]**2 + cell_spin[2]**2)
+    
+        return energy
+    
