@@ -26,7 +26,7 @@ def CanoMC(kagome):
             x = (rnd.random()*2-1)*np.sqrt(1-z**2)
             y = np.sqrt(1-z**2-x**2)
             #random change of spin with constriant that delta_Sz < T
-            E1 = kagome.energy + J*(np.array([x,y,z])-spin[cell][site,:])*near(kagome,cell,site)
-            if rnd.random()<min(1,np.exp(-beta*E1)/np.exp(-beta*kagome.energy)):
+            dE = J*np.dot((np.array([x,y,z])-spin[cell][site,:]),near(kagome,cell,site))
+            if rnd.random()<min(1,np.exp(-beta*dE)):
                 kagome.spin_tensor[cell][site,:]=np.array([x,y,z])
-                kagome.energy = E1
+                kagome.energy += dE
