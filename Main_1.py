@@ -2,6 +2,7 @@ import class_Configuration.py
 import numpy as np
 import Measure.py
 from tqdm.notebook import tqdm_notebook
+import hybridMC.py
 
 # initialize a configuration
 Temp_range = np.hstack([np.arange(0.0001,0.01,0.00015),np.arange(0.01,0.1,0.015),np.arange(0.1,0.4,0.1)])
@@ -21,6 +22,8 @@ for i, T in enumerate(pbar):
 
     # Process the Hybrid MC, and get the average value
     for n in range(n_warmup + n_cycles):
+        num_of_over_relax = 4
+        hybrid_Monte_Carlo(num_of_over_relax, config)
         if n >= n_warmup:
            av_e += measure(config)
            av_e2 = measure(config)**2
@@ -34,6 +37,6 @@ for i, T in enumerate(pbar):
 
 #Save quantities in a file
 
-np.savetxt("Cavity_%i.dat"%L, Cavity)   
+np.savetxt("Cavity_%i.dat"%L, Cavity)
 
 
