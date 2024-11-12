@@ -24,7 +24,7 @@ def CanoMC(kagome):
         for n2 in range(L):
             for site in range(3):
                 delta =rnd.random([3])*2-1
-                z = delta[2]*T+spin[n1][n2][2]
+                z = delta[2]*T+spin[n1][n2][site][2]
                 x = delta[0]/np.sqrt((delta[0]**2)+delta[1]**2)*np.sqrt(1-z**2)
                 y = delta[1]/np.sqrt((delta[0]**2)+delta[1]**2)*np.sqrt(1-z**2)
                 #random change of spin with constriant that delta_Sz < T
