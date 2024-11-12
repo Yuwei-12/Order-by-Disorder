@@ -24,7 +24,7 @@ for i, T in enumerate(pbar):
     for n in range(n_warmup + n_cycles):
         num_of_over_relax = 4
         hybrid_Monte_Carlo(num_of_over_relax, config)
-        if n >= n_warmup:
+    for k in range(n_cycles):
            av_e += measure(config)
            av_e2 = measure(config)**2
 
