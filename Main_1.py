@@ -1,39 +1,40 @@
-import class_Configuration.py
 import numpy as np
-import Measure.py
-from tqdm.notebook import tqdm_notebook
-import hybridMC.py
+from tqdm import tqdm
+import lib
+import classConfiguration
+
 
 # initialize a configuration
 Temp_range = np.hstack([np.arange(0.0001,0.01,0.00015),np.arange(0.01,0.1,0.015),np.arange(0.1,0.4,0.1)])
 Cavity = np.zeros_like(Temp_range)
 
 # lattice size
-L = 10
+L = 12
 
-pbar = tqdm_notebook(Temp_range)
-for i, T in enumerate(pbar):
-    pbar.set_description(f"Processing T = {T:.2f}")
+#pbar = tqdm_notebook(Temp_range)
+for i, T in tqdm(enumerate(Temp_range)):
+    #pbar.set_description(f"Processing T = {T:.2f}")
     # at each temperature, initialize the Configuration
-    config = Configuration(T, 1.0, L)
+    config = classConfiguration.Configuration(T, 1.0, L)
     av_e, av_e2 = 0, 0
-    n_cycles = 5*100000
+    n_cycles = 5*10000
     n_warmup = 5*10000
-
+    n_sites = int(L**2/3)
     # Process the Hybrid MC, and get the average value
     for n in range(n_warmup + n_cycles):
         num_of_over_relax = 4
-        hybrid_Monte_Carlo(num_of_over_relax, config)
+        lib.hybrid_Monte_Carlo(config,n_sites)
     for k in range(n_cycles):
-           av_e += measure(config)
-           av_e2 = measure(config)**2
+           av_e += lib.measure(config,n_sites)
+           av_e2 += lib.measure(config,n_sites)**2
 
     # normalize averages
     av_e /= float(n_cycles)
     av_e2/= float(n_cycles)
 
     # get physical quantities
-    Cavity[i] = (av_e2 - av_e**2)/(T**2)
+    Cavity[i] = (av_e2 - av_e**2)/((T**2)*(L**2)*3)
+    print(av_e**2,av_e2,Cavity[i])
 
 #Save quantities in a file
 

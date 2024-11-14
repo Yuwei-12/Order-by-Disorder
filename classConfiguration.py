@@ -21,7 +21,7 @@ class Configuration:
                     x_component = np.random.uniform(-1, 1)
                     y_component = np.random.uniform(-1, 1)
                     z_component = np.random.uniform(-1, 1)
-                    norm = math.sqrt(x_component**2 + y_component**2 + z_component**2)
+                    norm = np.sqrt(x_component**2 + y_component**2 + z_component**2)
                     x_component /= norm
                     y_component /= norm
                     z_component /= norm
