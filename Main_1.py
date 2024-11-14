@@ -21,7 +21,7 @@ for i, T in tqdm(enumerate(Temp_range)):
     n_warmup = 5*10000
     n_sites = int(L**2/3)
     # Process the Hybrid MC, and get the average value
-    for n in range(n_warmup + n_cycles):
+    for n in range(n_warmup):
         num_of_over_relax = 4
         lib.hybrid_Monte_Carlo(config,n_sites)
     for k in range(n_cycles):
