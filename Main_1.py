@@ -5,7 +5,7 @@ import classConfiguration
 
 
 # initialize a configuration
-Temp_range = np.hstack([np.arange(0.0001,0.01,0.00015),np.arange(0.01,0.1,0.015),np.arange(0.1,0.4,0.1)])
+Temp_range = np.hstack([np.arange(0.0001,0.01,0.00033),np.arange(0.01,0.1,0.015),np.arange(0.1,0.4,0.1)])
 Cavity = np.zeros_like(Temp_range)
 
 # lattice size
