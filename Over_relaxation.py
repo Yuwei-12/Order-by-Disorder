@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.random as rnd
 import class_Configuration.py
-import Canonic.MC.py
+import CanonicMC.py
 
 L = lattice.size
 num_sites = L*L*2/3 # The number of sites which are chosen
