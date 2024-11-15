@@ -25,8 +25,9 @@ for i, T in tqdm(enumerate(Temp_range)):
         num_of_over_relax = 4
         lib.hybrid_Monte_Carlo(config,n_sites)
     for k in range(n_cycles):
-           av_e += lib.measure(config,n_sites)
-           av_e2 += lib.measure(config,n_sites)**2
+        e0 = lib.measure(config,n_sites)
+        av_e += e0
+        av_e2 += e0**2
 
     # normalize averages
     av_e /= float(n_cycles)
