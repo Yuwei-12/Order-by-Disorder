@@ -47,7 +47,7 @@ def measure_chi_T(kagome, T, num_sites):
                                 for alpha in range(3):
                                     for beta in range(3):
                                         for gamma in range(3):
-                                            chi_T += T_i_x_y_z[x_i, y_i, site_i, alpha, beta, gamma]*T_i_tensor[x_j, y_j, site_j, alpha, beta, gamma]
+                                            chi_T += T_i_x_y_z[x_i, y_i, site_i, alpha, beta, gamma]*T_i_x_y_z[x_j, y_j, site_j, alpha, beta, gamma]
     chi_T /= (3 * N * T * L**2)
     print(chi_T)
     return chi_T
