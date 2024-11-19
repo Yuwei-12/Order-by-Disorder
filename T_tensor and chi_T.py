@@ -23,7 +23,7 @@ def T_alpha_beta_gamma(kagome,num_sites):
                     for n_x in range(L):
                         for n_y in range(L):
                             for site in range(3):
-                                T_tensor[alpha, beta, gamma] += T_i_tensor[alpha, beta, gamma, n_x, n_y, site]
+                                T_tensor[alpha, beta, gamma] += T_i_x_y_z[n_x, n_y, site, alpha, beta, gamma]
                 T_tensor[alpha, beta, gamma] /= (3 * N * L**2)
     print(T_tensor)
     return T_tensor
@@ -47,7 +47,7 @@ def measure_chi_T(kagome, T, num_sites):
                                 for alpha in range(3):
                                     for beta in range(3):
                                         for gamma in range(3):
-                                            chi_T += T_i_tensor[alpha, beta, gamma, x_i, y_i, site_i]*T_i_tensor[alpha, beta, gamma, x_j, y_j, site_j]
+                                            chi_T += T_i_x_y_z[x_i, y_i, site_i, alpha, beta, gamma]*T_i_tensor[x_j, y_j, site_j, alpha, beta, gamma]
     chi_T /= (3 * N * T * L**2)
     print(chi_T)
     return chi_T
