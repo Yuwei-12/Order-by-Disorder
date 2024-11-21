@@ -1,6 +1,7 @@
 import numpy as np
 import lib
 from tqdm import tqdm
+from numba import njit
 
 def T_i_x_y_z(lattice):
     L = lattice.size
@@ -77,6 +78,7 @@ def measureChiT(kagome, T, num_sites):
     #print(chi_T)
     return chi_T
 
+
 def measureT2(tensor):
     T2 = 0
     for i in range(3):
@@ -86,24 +88,29 @@ def measureT2(tensor):
     return T2
 
 
+@njit
+def T2(spin,L):
+    for x_i in range(L):
+            for y_i in range(L):
+                for site_i in range(3):
+                    for x_j in range(L):
+                            for y_j in range(L):
+                                for site_j in range(3):
+                                    T2 = np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])**3-0.6*np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])
+    return T2
+
+
+
 def T2S(kagome,num_sites):
     L = kagome.size
-    spin = kagome.spins
-    T2 = 0
     N = 20 #number of measurements for one data  
     for a in range(5):
         lib.hybrid_Monte_Carlo(kagome,num_sites)
         #5 intervals to generate a new grid
     L = kagome.size
-    chi_T = 0
     
     for b in range(N):
         lib.hybrid_Monte_Carlo(kagome,num_sites)
-    for x_i in range(L):
-        for y_i in range(L):
-            for site_i in range(3):
-                for x_j in range(L):
-                        for y_j in range(L):
-                            for site_j in range(3):
-                                T2 += np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])**3-0.6*np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])
-    return T2/(3*L**2)**2
+        spin = kagome.spins
+        Tsqua = T2(spin,L)/(3*L**2)**2
+    return Tsqua
