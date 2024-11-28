@@ -44,20 +44,20 @@ def CanoMC(L,beta,J,spin):
                     E += dE
     return spin,E
 
-def choose_random_sites(lattice, num_sites):
-    L = lattice.size
+#def choose_random_sites(lattice, num_sites):
+    #L = lattice.size
     #Generate all possible (x , y) coordinates in an L*L lattice
     # n is the label of spins in one Triangle, and in the range: 0, 1, 2
-    selected_sites = []
-    for i in range(num_sites):
-        x = rnd.randint(0,L)
-        y = rnd.randint(0,L)
-        n = rnd.randint(0,3)
-        selected_sites.append([x,y,n])
+    #selected_sites = []
+    #for i in range(num_sites):
+     #   x = rnd.randint(0,L)
+      #  y = rnd.randint(0,L)
+       # n = rnd.randint(0,3)
+        #selected_sites.append([x,y,n])
     #all_sites = [(x, y, n) for x in range(L) for y in range(L) for n in range(3)]
     # Randomly select 'num_sites' unique coordinates
     #selected_sites = rnd.sample(all_sites, num_sites)
-    return selected_sites
+    #return selected_sites
 # The state of spin after the flip
 # former_stete is the coordinates (x,y,n) in the lattice of the choosen spins
 def later_state(lattice,former_state):
@@ -73,13 +73,63 @@ def later_state(lattice,former_state):
     #Aft_flip = Aft_flip/np.sqrt(Aft_flip[0]**2+Aft_flip[1]**2+Aft_flip[2]**2)
     return Aft_flip
 
-def Over_relaxation(lattice,num_sites):
+#def Over_relaxation(lattice,num_sites):
+ #   L = lattice.size
+ #   selected_sites = choose_random_sites(lattice,num_sites)
+  #  for i in range (num_sites):
+   #     Cho_site = selected_sites[i]
+    #    Aft_flip = later_state(lattice,Cho_site)
+     #   lattice.spins[Cho_site[0]][Cho_site[1]][Cho_site[2]] = Aft_flip
+def Over_relaxation_sub(lattice,x_0, y_0, mo_x, mo_y):
+    # mo_x, mo_y determine the length of sublattice
+    for i in range(mo_x):
+        for k in range(mo_y):
+            for n in range(3):
+                cho_site = np.zeros(3)
+                cho_site[0] = x_0 + i
+                cho_site[1] = y_0 + i
+                cho_site[2] = n
+                Aft_flip = later_state(lattice,cho_site)
+                lattice.spins[cho_site[0]][cho_site[1]][cho_site[2]] = Aft_flip
+
+
+def Over_relaxation(lattice):
     L = lattice.size
-    selected_sites = choose_random_sites(lattice,num_sites)
-    for i in range (num_sites):
-        Cho_site = selected_sites[i]
-        Aft_flip = later_state(lattice,Cho_site)
-        lattice.spins[Cho_site[0]][Cho_site[1]][Cho_site[2]] = Aft_flip
+    x_0 = rnd.randint(0, L-1)
+    y_0 = rnd.randint(0, L-1)
+    # divide the lattice into 4 indipendent parts
+    # for the first part
+    mo_x = x_0 -1
+    if mo_x == 0:
+        mo_x = 1
+    mo_y = y_0 -1
+    if mo_y == 0:
+        mo_y = 1
+    Over_relaxation_sub(lattice, 0, 0, mo_x, mo_y)
+    # for the second part
+    mo_x = L - x_0
+    if mo_x == 0:
+        mo_x = 1
+    mo_y = y_0 - 1
+    if mo_y == 0:
+        mo_y = 1
+    Over_relaxation_sub(lattice, x_0+1, 0, mo_x, mo_y)
+    # for the third part
+    mo_x = x_0 - 1
+    if mo_x == 0:
+        mo_x = 1
+    mo_y = L -y_0
+    if mo_y == 0:
+        mo_y = 1
+    Over_relaxation_sub(lattice, 0, y_0 - 1, mo_x, mo_y)
+    # for the forth part
+    mo_x = L - x_0
+    if mo_x == 0:
+        mo_x = 1
+    mo_y = L- y_0
+    if mo_y == 0:
+        mo_y = 1
+    Over_relaxation_sub(lattice, x_0 + 1, y_0 + 1, mo_x, mo_y)
 
 
 def hybrid_Monte_Carlo(kagome,num_sites): 
