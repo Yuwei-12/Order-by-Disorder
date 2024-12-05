@@ -32,49 +32,46 @@ def T_i_x_y_z(lattice):
     return T_i
 
 
-def T_alpha_beta_gamma(kagome,num_sites):
-    N = 20 #number of measurements for one data  
-    for a in range(5):
-        lib.hybrid_Monte_Carlo(kagome,num_sites)
-        #5 intervals to generate a new grid
-    L = kagome.size
-    T_tensor = np.zeros((3, 3, 3))
-    for b in range(N):
-        lib.hybrid_Monte_Carlo(kagome,num_sites)
-        Ti_tensor = T_i_x_y_z(kagome)
-        for alpha in range(3):
-            for beta in range(3):
-                for gamma in range(3):    
-                    for n_x in range(L):
-                        for n_y in range(L):
-                            for site in range(3):
-                                T_tensor[alpha, beta, gamma] += Ti_tensor[n_x][n_y][site][alpha][beta][gamma]
-                    T_tensor[alpha, beta, gamma] /= (3 * L**2)
-    #print(T_tensor)
-    return T_tensor/N
+# def T_alpha_beta_gamma(kagome,num_sites):
+#     N = 20 #number of measurements for one data  
+#     for a in range(5):
+#         lib.hybrid_Monte_Carlo(kagome,num_sites)
+#         #5 intervals to generate a new grid
+#     L = kagome.size
+#     T_tensor = np.zeros((3, 3, 3))
+#     for b in range(N):
+#         lib.hybrid_Monte_Carlo(kagome,num_sites)
+#         Ti_tensor = T_i_x_y_z(kagome)
+#         for alpha in range(3):
+#             for beta in range(3):
+#                 for gamma in range(3):    
+#                     for n_x in range(L):
+#                         for n_y in range(L):
+#                             for site in range(3):
+#                                 T_tensor[alpha, beta, gamma] += Ti_tensor[n_x][n_y][site][alpha][beta][gamma]
+#                     T_tensor[alpha, beta, gamma] /= (3 * L**2)
+#     #print(T_tensor)
+#     return T_tensor/N
 
 def measureChiT(kagome, T, num_sites):
-    N = 20 #number of measurements for one data  
     for a in range(5):
-        lib.hybrid_Monte_Carlo(kagome,num_sites)
+        lib.hybrid_Monte_Carlo(kagome,num_sites,1./T)
         #5 intervals to generate a new grid
     L = kagome.size
     chi_T = 0
-    
-    for b in range(N):
-        lib.hybrid_Monte_Carlo(kagome,num_sites)
-        Tixyz = T_i_x_y_z(kagome)
-        for x_i in range(L):
-            for y_i in range(L):
-                for site_i in range(3):
-                    for x_j in range(L):
-                        for y_j in range(L):
-                            for site_j in range(3):
-                                for alpha in range(3):
-                                    for beta in range(3):
-                                        for gamma in range(3):
-                                            chi_T += Tixyz[x_i][y_i][site_i][alpha][beta][gamma]*Tixyz[x_j][y_j][site_j][alpha][beta][gamma]
-    chi_T /= (3 * N * T * L**2)
+    lib.hybrid_Monte_Carlo(kagome,num_sites,1./T)
+    Tixyz = T_i_x_y_z(kagome)
+    for x_i in range(L):
+        for y_i in range(L):
+            for site_i in range(3):
+                for x_j in range(L):
+                    for y_j in range(L):
+                        for site_j in range(3):
+                            for alpha in range(3):
+                                for beta in range(3):
+                                    for gamma in range(3):
+                                        chi_T += Tixyz[x_i][y_i][site_i][alpha][beta][gamma]*Tixyz[x_j][y_j][site_j][alpha][beta][gamma]
+    chi_T /= (3 * T * L**2)
     #print(chi_T)
     return chi_T
 
@@ -90,27 +87,24 @@ def measureT2(tensor):
 
 @njit
 def T2(spin,L):
+    T2 = 0
     for x_i in range(L):
-            for y_i in range(L):
-                for site_i in range(3):
-                    for x_j in range(L):
-                            for y_j in range(L):
-                                for site_j in range(3):
-                                    T2 = np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])**3-0.6*np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])
+        for y_i in range(L):
+            for site_i in range(3):
+                for x_j in range(L):
+                    for y_j in range(L):
+                        for site_j in range(3):
+                            T2 += np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])**3-0.6*np.dot(spin[x_i][y_i][site_i],spin[x_j][y_j][site_j])
     return T2
 
 
 
-def T2S(kagome,num_sites):
+def T2S(kagome,num_sites,beta):
     L = kagome.size
-    N = 20 #number of measurements for one data  
     for a in range(5):
-        lib.hybrid_Monte_Carlo(kagome,num_sites)
+        lib.hybrid_Monte_Carlo(kagome,num_sites,beta)
         #5 intervals to generate a new grid
     L = kagome.size
-    
-    for b in range(N):
-        lib.hybrid_Monte_Carlo(kagome,num_sites)
-        spin = kagome.spins
-        Tsqua = T2(spin,L)/(3*L**2)**2
+    spin = kagome.spins
+    Tsqua = T2(spin,L)/((3*L**2)**2)
     return Tsqua

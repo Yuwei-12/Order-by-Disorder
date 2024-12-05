@@ -1,39 +1,40 @@
 import numpy as np
 from tqdm import tqdm
-import lib
-import classConfiguration
+import newlib
+import classConfiguration2
 import libChiT2
 import matplotlib.pyplot as pl
 
 
 
 # initialize a configuration
-Temp_range = np.hstack([np.arange(0.0001,0.01,0.00033),np.arange(0.0105,0.1,0.015),np.arange(0.13,0.4,0.1)])
+Temp_range = np.hstack([np.arange(0.0001,0.005,0.0003),np.arange(0.005,0.01,0.001),np.arange(0.01,0.02,0.003)])
+# Temp_range = np.flip(Temp_range)#
 ChiT = np.zeros_like(Temp_range)
 
 # lattice size
-L = 12
-
+# lattice size
+L = 8
+config = classConfiguration2.Configuration(1.0, L)
 #pbar = tqdm_notebook(Temp_range)
+n_cycles = 2000
+n_cool = 10000
+n_warm = 10000
+n_sites = int(L**2*2)
+# for n in range(n_cool):
+#     newlib.hybrid_Monte_Carlo(config,n_sites,1./0.01)
 for i, T in enumerate(Temp_range):
-    #pbar.set_description(f"Processing T = {T:.2f}")
-    # at each temperature, initialize the Configuration
-    config = classConfiguration.Configuration(T, 1.0, L)
-    n_cycles = 5*100
-    n_warmup = 10000
-    n_sites = int(L**2/3)
     # Process the Hybrid MC, and get the average value
-    for n in tqdm(range(n_warmup)):
-        num_of_over_relax = 4
-        lib.hybrid_Monte_Carlo(config,n_sites)
+    for n in range(n_warm):
+        newlib.hybrid_Monte_Carlo(config,n_sites,1./T)
     for k in tqdm(range(n_cycles)):
-        ChiT[i] += libChiT2.measureChiT(config,T,n_sites)/n_cycles
+        ChiT[i] += T*libChiT2.measureChiT(config,T,n_sites)/n_cycles
 
     # get physical quantities
-    print(T*ChiT[i])
+    #print(T*ChiT[i])
  
 #Save quantities in a file
-np.savetxt("Tabc_%i.dat"%L, ChiT)
+np.savetxt("Tabc_%i.dat"%L, T*ChiT)
 
-pl.semilogx(Temp_range,ChiT)
-pl.show()
+# pl.semilogy(Temp_range,ChiT)
+# pl.show()
