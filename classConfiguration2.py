@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.random as rnd
 import matplotlib.pyplot as plt
-from numba import njit
+from numba import njit   #used to speed up
 
 class Configuration:
     def __init__(self, J, L):
